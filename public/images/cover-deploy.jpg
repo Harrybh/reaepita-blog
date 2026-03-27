@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#1a1f2e"/>
+  <rect x="100" y="100" width="1000" height="430" rx="16" fill="#252d3d"/>
+  <text x="600" y="330" text-anchor="middle" font-size="48" fill="#7bb3c0" font-family="monospace">$ deploy</text>
+</svg>

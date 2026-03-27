@@ -1,0 +1,139 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --color-ghibli-moss: #4a7c59;
+  --color-ghibli-leaf: #7ab648;
+  --color-ghibli-sky: #7bb3c0;
+  --color-ghibli-cloud: #ddeef5;
+  --color-ghibli-earth: #8b6f47;
+  --color-ghibli-sand: #c4a882;
+  --color-ghibli-parchment: #f5f0e8;
+  --color-ghibli-ink: #2c2416;
+  --color-ghibli-mist: #e8e0d5;
+  --color-ghibli-sunset: #d4845a;
+
+  --font-serif: 'Noto Serif SC', serif;
+  --font-sans: 'Noto Sans SC', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --font-size-base: 17px;
+  --line-height-base: 1.85;
+}
+
+@layer base {
+  :root {
+    --bg-primary: #f5f0e8;
+    --bg-secondary: #eee8dc;
+    --text-primary: #2c2416;
+    --text-secondary: #6b5c45;
+    --border-color: #d4c9b8;
+    --card-bg: #faf7f2;
+    --card-shadow: 0 2px 16px rgba(139, 111, 71, 0.12);
+  }
+
+  .dark {
+    --bg-primary: #1a1a14;
+    --bg-secondary: #252520;
+    --text-primary: #e8e0d5;
+    --text-secondary: #a89880;
+    --border-color: #3a3830;
+    --card-bg: #252520;
+    --card-shadow: 0 2px 16px rgba(0, 0, 0, 0.3);
+  }
+
+  html {
+    font-size: 17px;
+    line-height: 1.85;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Noto Sans SC', sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Noto Serif SC', serif;
+  }
+
+  code, pre {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+@layer components {
+  .ghibli-card {
+    background-color: var(--card-bg);
+    box-shadow: var(--card-shadow);
+    border-radius: 1rem;
+    border: 1px solid var(--border-color);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .ghibli-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(139, 111, 71, 0.18);
+  }
+
+  .dark .ghibli-card:hover {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  }
+
+  .ghibli-prose {
+    max-width: 65ch;
+    margin: 0 auto;
+  }
+
+  .hero-overlay {
+    background: linear-gradient(
+      to bottom,
+      rgba(44, 36, 22, 0) 0%,
+      rgba(44, 36, 22, 0.3) 60%,
+      rgba(44, 36, 22, 0.75) 100%
+    );
+  }
+}
+
+/* Code block styles */
+[data-rehype-pretty-code-figure] pre {
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  overflow-x: auto;
+  background: #1a1f2e !important;
+  border: 1px solid #2a3040;
+}
+
+[data-rehype-pretty-code-figure] code {
+  background: transparent !important;
+  padding: 0 !important;
+  color: inherit;
+  font-size: 0.875rem;
+}
+
+[data-rehype-pretty-code-title] {
+  background: #252d3d;
+  color: #7bb3c0;
+  padding: 0.5rem 1.25rem;
+  border-radius: 0.75rem 0.75rem 0 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  border: 1px solid #2a3040;
+  border-bottom: none;
+}
+
+/* Prose overrides for MDX */
+.prose h2 {
+  padding-left: 0.75rem;
+  border-left: 3px solid #4a7c59;
+  margin-top: 2rem;
+}
+
+.prose h3 {
+  padding-left: 0.5rem;
+  border-left: 2px solid #7ab648;
+  margin-top: 1.5rem;
+}

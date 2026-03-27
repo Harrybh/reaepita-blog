@@ -1,0 +1,210 @@
+---
+title: "在 Ubuntu 上部署 Next.js — 从零到上线的完整指南"
+date: "2024-04-20"
+excerpt: "详细记录如何在 Ubuntu 服务器上部署 Next.js 应用，包括 Node.js 环境配置、PM2 进程管理、Nginx 反向代理以及 Let's Encrypt SSL 证书配置。"
+cover: "/images/cover-deploy.jpg"
+tags: ["技术", "Next.js", "部署", "Ubuntu"]
+author: "reaepita"
+readingTime: 8
+---
+
+## 前提条件
+
+在开始之前，你需要：
+
+- 一台运行 Ubuntu 20.04 或 22.04 的服务器
+- 一个指向该服务器 IP 的域名
+- 基本的 Linux 命令行知识
+
+## 第一步：安装 Node.js
+
+推荐使用 `nvm`（Node Version Manager）来管理 Node.js 版本：
+
+```bash
+# 安装 nvm
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+
+# 重新加载 shell 配置
+source ~/.bashrc
+
+# 安装 Node.js LTS 版本
+nvm install --lts
+nvm use --lts
+
+# 验证安装
+node --version
+npm --version
+```
+
+## 第二步：安装和配置 Nginx
+
+```bash
+# 安装 Nginx
+sudo apt update
+sudo apt install nginx -y
+
+# 启动 Nginx 并设置开机自启
+sudo systemctl start nginx
+sudo systemctl enable nginx
+```
+
+### 创建 Nginx 配置文件
+
+```bash
+sudo nano /etc/nginx/sites-available/reaepita-blog
+```
+
+填入以下配置：
+
+```nginx
+server {
+    listen 80;
+    server_name reaepita.top www.reaepita.top;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    location /_next/static/ {
+        proxy_pass http://localhost:3000;
+        add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+}
+```
+
+```bash
+# 启用配置
+sudo ln -s /etc/nginx/sites-available/reaepita-blog /etc/nginx/sites-enabled/
+
+# 测试配置
+sudo nginx -t
+
+# 重载 Nginx
+sudo systemctl reload nginx
+```
+
+## 第三步：配置 SSL 证书
+
+使用 Let's Encrypt 获取免费 SSL 证书：
+
+```bash
+# 安装 Certbot
+sudo apt install certbot python3-certbot-nginx -y
+
+# 获取证书（自动配置 Nginx）
+sudo certbot --nginx -d reaepita.top -d www.reaepita.top
+
+# 设置自动续期
+sudo crontab -e
+# 添加以下行：
+# 0 12 * * * /usr/bin/certbot renew --quiet
+```
+
+## 第四步：部署 Next.js 应用
+
+```bash
+# 创建应用目录
+sudo mkdir -p /var/www/reaepita-blog
+sudo chown $USER:$USER /var/www/reaepita-blog
+
+# 克隆你的代码（或上传代码）
+cd /var/www/reaepita-blog
+git clone https://github.com/yourusername/reaepita-blog.git .
+
+# 安装依赖
+npm install
+
+# 构建应用
+npm run build
+```
+
+## 第五步：使用 PM2 管理进程
+
+```bash
+# 全局安装 PM2
+npm install -g pm2
+
+# 使用 ecosystem 配置启动
+pm2 start ecosystem.config.js
+
+# 保存 PM2 配置（开机自启）
+pm2 save
+
+# 设置 PM2 开机自启
+pm2 startup
+# 按照提示运行输出的命令
+```
+
+### PM2 常用命令
+
+```bash
+pm2 list                    # 查看所有进程
+pm2 logs reaepita-blog      # 查看日志
+pm2 restart reaepita-blog   # 重启应用
+pm2 stop reaepita-blog      # 停止应用
+pm2 monit                   # 实时监控
+```
+
+## 第六步：配置防火墙
+
+```bash
+# 允许 SSH、HTTP 和 HTTPS
+sudo ufw allow ssh
+sudo ufw allow 'Nginx Full'
+sudo ufw enable
+```
+
+## 更新部署流程
+
+当有新代码时，更新流程很简单：
+
+```bash
+cd /var/www/reaepita-blog
+
+# 拉取最新代码
+git pull origin main
+
+# 安装新依赖（如果有）
+npm install
+
+# 重新构建
+npm run build
+
+# 重启 PM2 进程
+pm2 restart reaepita-blog
+```
+
+## 常见问题排查
+
+### 502 Bad Gateway
+
+通常是 Next.js 应用没有在运行：
+
+```bash
+pm2 list          # 检查进程状态
+pm2 logs          # 查看错误日志
+```
+
+### 静态资源 404
+
+检查 Nginx 配置中的 `/_next/static/` 路径是否正确配置。
+
+### SSL 证书续期失败
+
+```bash
+sudo certbot renew --dry-run  # 测试续期
+```
+
+---
+
+> **提示：** 整个部署过程大约需要 30-60 分钟。如果是第一次部署，建议先在本地测试 `npm run build` 确保没有构建错误，再上传到服务器。
+
+部署完成后，访问你的域名就能看到博客了。如果你按照这篇文章操作遇到了问题，欢迎留言告诉我。

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#ddeef5"/>
+  <circle cx="600" cy="315" r="150" fill="#4a7c59" opacity="0.6"/>
+  <text x="600" y="330" text-anchor="middle" font-size="48" fill="#f5f0e8" font-family="serif">reaepita</text>
+</svg>
