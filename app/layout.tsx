@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { ThemeProvider } from 'next-themes'
-import Header from '@/components/Layout/Header'
-import Footer from '@/components/Layout/Footer'
+import LayoutShell from '@/components/Layout/LayoutShell'
 import '@/styles/globals.css'
 
 export const metadata: Metadata = {
@@ -40,11 +39,9 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen flex flex-col bg-ghibli-parchment dark:bg-[#1a1a14]">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-          <Header />
-          <main className="flex-1">
+          <LayoutShell>
             {children}
-          </main>
-          <Footer />
+          </LayoutShell>
         </ThemeProvider>
       </body>
     </html>

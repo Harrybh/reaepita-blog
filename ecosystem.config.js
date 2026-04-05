@@ -3,7 +3,7 @@ module.exports = {
     name: 'reaepita-blog',
     script: 'node_modules/.bin/next',
     args: 'start',
-    cwd: '/var/www/reaepita-blog',
+    cwd: '/root/MyBlog/reaepita-blog',
     instances: 1,
     autorestart: true,
     watch: false,
